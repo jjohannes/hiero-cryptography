@@ -39,9 +39,19 @@ env:
   GRADLE_CACHE_PASSWORD: ${{ secrets.GRADLE_CACHE_PASSWORD }}
 
 jobs:
+  read-build-targets:
+    name: Read Build Targets
+    uses: ./.github/workflows/855-call-extract-targets-and-libs.yaml
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
+
   create-github-release:
     name: Github / Release
+    needs:
+      - read-build-targets
     runs-on: hl-crypto-lin-md
+    env:
+      HIERO_LIBSODIUM_TARGETS: ${{ needs.read-build-targets.outputs.hiero-libsodium-targets }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@20cf305ff2072d973412fa9b1e3a4f227bda3c76 # v2.14.0
